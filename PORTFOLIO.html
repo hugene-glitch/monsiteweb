@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<!-- ============================================================
+     HEAD : métadonnées, polices Google, et tout le CSS
+     ============================================================ -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LionelDJOKI – Portfolio</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&family=Exo+2:wght@300;400;700&display=swap" rel="stylesheet" />
+
+  <!-- ============================================================
+       CSS – tout le style du portfolio
+       ============================================================ -->
+  <style>
+    /* ---- Variables de couleurs & polices ---- */
+    :root {
+      --black:   #0a0a0f;
+      --dark:    #111827;
+      --blue:    #1d6fc4;
+      --blue2:   #3b9eff;
+      --white:   #f0f4ff;
+      --grey:    #8899aa;
+      --card-bg: #141c28;
+      --border:  rgba(61, 158, 255, 0.18);
+      --glow:    rgba(61, 158, 255, 0.35);
+      --font-title: 'Rajdhani', sans-serif;
+      --font-mono:  'Space Mono', monospace;
+      --font-body:  'Exo 2', sans-serif;
+    }
+
+    /* ---- Reset & base ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      cursor: none;         /* curseur personnalisé */
+    }
+
+    /* ---- Curseur personnalisé ---- */
+    #cursor {
+      position: fixed;
+      width: 18px; height: 18px;
+      border: 2px solid var(--blue2);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: transform .12s, width .2s, height .2s, background .2s;
+      z-index: 9999;
+    }
+    #cursor.big { width: 38px; height: 38px; background: var(--glow); }
+
+    /* ---- Grille de fond animée ---- */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+      z-index: 0;
+    }
+    @keyframes gridMove {
+      from { background-position: 0 0; }
+      to   { background-position: 60px 60px; }
+    }
+
+    /* ---- Barre de navigation ---- */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 6vw;
+      background: rgba(10,10,15,.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: var(--font-title);
+      font-size: 1.6rem; font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--white);
+    }
+    .nav-logo span { color: var(--blue2); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--grey);
+      font-family: var(--font-mono);
+      font-size: .78rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color .25s;
+    }
+    .nav-links a:hover { color: var(--blue2); }
+
+    /* ---- Sections générales ---- */
+    section {
+      position: relative; z-index: 1;
+      padding: 110px 8vw 80px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      color: var(--blue2);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-family: var(--font-title);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 48px;
+      color: var(--white);
+    }
+    .section-title span { color: var(--blue2); }
+
+    /* ---- HERO ---- */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      padding-top: 120px;
+    }
+    .hero-tag {
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      color: var(--blue2);
+      letter-spacing: 4px;
+      margin-bottom: 18px;
+      opacity: 0;
+      animation: fadeUp .6s .3s forwards;
+    }
+    .hero-name {
+      font-family: var(--font-title);
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 4px;
+      opacity: 0;
+      animation: fadeUp .7s .5s forwards;
+    }
+    .hero-name .accent { color: var(--blue2); }
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--grey);
+      margin-top: 22px;
+      max-width: 540px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp .7s .75s forwards;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem;
+      margin-top: 38px;
+      opacity: 0;
+      animation: fadeUp .7s 1s forwards;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 30px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: .82rem;
+      letter-spacing: 1px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--glow); }
+    .btn-outline {
+      background: transparent;
+      color: var(--blue2);
+      border: 1px solid var(--blue2);
+    }
+    .btn-outline:hover { background: rgba(61,158,255,.08); transform: translateY(-3px); }
+
+    /* Typing animation */
+    .typing-wrap {
+      margin-top: 28px;
+      font-family: var(--font-mono);
+      font-size: .9rem;
+      color: var(--grey);
+      opacity: 0;
+      animation: fadeUp .7s .9s forwards;
+    }
+    .typing-wrap span.typed { color: var(--blue2); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute; bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: .7rem;
+      color: var(--grey); letter-spacing: 2px;
+      animation: bounce 2s infinite;
+    }
+    .scroll-hint::after {
+      content: '';
+      display: block; width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--blue2), transparent);
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ---- PARCOURS – timeline ---- */
+    .timeline { position: relative; padding-left: 40px; }
+    .timeline::before {
+      content: '';
+      position: absolute; top: 0; left: 11px;
+      width: 2px; bottom: 0;
+      background: linear-gradient(to bottom, var(--blue2), transparent);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 48px;
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity .6s, transform .6s;
+    }
+    .tl-item.visible { opacity: 1; transform: translateX(0); }
+    .tl-dot {
+      position: absolute; left: -35px; top: 6px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--blue);
+      border: 2px solid var(--blue2);
+      box-shadow: 0 0 10px var(--glow);
+    }
+    .tl-year {
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      color: var(--blue2);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .tl-title {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .tl-place {
+      font-size: .88rem;
+      color: var(--grey);
+      line-height: 1.6;
+    }
+    .tl-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: .72rem;
+      font-family: var(--font-mono);
+      color: var(--blue2);
+      background: rgba(29,111,196,.1);
+    }
+
+    /* ---- COMPÉTENCES ---- */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 22px;
+    }
+    .skill-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 26px 22px;
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .skill-card.visible { opacity: 1; transform: translateY(0); transition: opacity .5s, transform .5s, box-shadow .25s, border-color .25s; }
+    .skill-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px var(--glow);
+      border-color: var(--blue2);
+    }
+    .skill-icon { font-size: 2rem; margin-bottom: 14px; }
+    .skill-name {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .skill-desc { font-size: .82rem; color: var(--grey); line-height: 1.6; }
+
+    /* Barre de compétence */
+    .skill-bar { margin-top: 14px; height: 4px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: hidden; }
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--blue2));
+      border-radius: 4px;
+      width: 0;
+      transition: width 1.2s ease;
+    }
+
+    /* ---- RÊVE – DevOps ---- */
+    #dream {
+      background: linear-gradient(135deg, #0a0a0f 0%, #0d1a2e 100%);
+    }
+    .dream-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    @media (max-width: 700px) { .dream-box { grid-template-columns: 1fr; } }
+    .dream-text p {
+      color: var(--grey);
+      line-height: 1.9;
+      margin-bottom: 16px;
+    }
+    .dream-text strong { color: var(--blue2); }
+    .tech-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .pill {
+      padding: 6px 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      color: var(--blue2);
+      background: rgba(29,111,196,.08);
+      transition: background .2s;
+    }
+    .pill:hover { background: rgba(29,111,196,.22); }
+    .dream-visual {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      height: 280px;
+    }
+    /* cercles DevOps animés */
+    .orbit {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed var(--border);
+      animation: spin linear infinite;
+    }
+    .orbit:nth-child(1) { width: 220px; height: 220px; animation-duration: 14s; }
+    .orbit:nth-child(2) { width: 150px; height: 150px; animation-duration: 9s; animation-direction: reverse; }
+    .orbit-center {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--blue2);
+      letter-spacing: 3px;
+      z-index: 1;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ---- CONTACT ---- */
+    #contact {
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .contact-card {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px 20px;
+      text-decoration: none;
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+    }
+    .contact-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 35px var(--glow);
+      border-color: var(--blue2);
+    }
+    .c-icon {
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+    .c-label {
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      color: var(--grey);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .c-value {
+      font-size: .9rem;
+      color: var(--white);
+      word-break: break-all;
+    }
+
+    /* ---- Footer ---- */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 30px;
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      color: var(--grey);
+      border-top: 1px solid var(--border);
+    }
+    footer span { color: var(--blue2); }
+
+    /* ---- Utilitaires responsive ---- */
+    @media (max-width: 600px) {
+      nav { padding: 14px 5vw; }
+      .nav-links { gap: 1rem; }
+      .hero-btns { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<!-- ============================================================
+     BODY : toute la structure HTML visible
+     ============================================================ -->
+<body>
+
+  <!-- Curseur personnalisé -->
+  <div id="cursor"></div>
+
+  <!-- ===================== NAVIGATION ===================== -->
+  <nav>
+    <div class="nav-logo">Lionel<span>DJOKI</span></div>
+    <ul class="nav-links">
+      <li><a href="#hero">Accueil</a></li>
+      <li><a href="#parcours">Parcours</a></li>
+      <li><a href="#skills">Compétences</a></li>
+      <li><a href="#dream">DevOps</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section id="hero">
+    <p class="hero-tag">// Portfolio — Réseaux & Télécommunications</p>
+
+    <h1 class="hero-name">
+      LIONEL<br /><span class="accent">DJOKI</span>
+    </h1>
+
+    <p class="hero-sub">
+      Futur ingénieur des travaux en Réseaux &amp; Télécommunications,
+      passionné de technologie, de création audiovisuelle et d'automatisation.
+      En route vers le monde <strong>DevOps</strong>.
+    </p>
+
+    <div class="typing-wrap">
+      &gt;&nbsp;<span class="typed" id="typed-text"></span><span id="cursor-blink">|</span>
+    </div>
+
+    <div class="hero-btns">
+      <a href="#parcours" class="btn btn-primary">Voir mon parcours</a>
+      <a href="#contact"  class="btn btn-outline">Me contacter</a>
+    </div>
+
+    <div class="scroll-hint">SCROLL</div>
+  </section>
+
+  <!-- ===================== PARCOURS ===================== -->
+  <section id="parcours">
+    <p class="section-label">01 / Académique</p>
+    <h2 class="section-title">Mon <span>Parcours</span></h2>
+
+    <div class="timeline">
+
+      <!-- Lycée -->
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2017 – 2021</p>
+        <h3 class="tl-title">Lycée Technique de Sangmélima</h3>
+        <p class="tl-place">
+          De la classe de <strong>Seconde</strong> jusqu'en <strong>Terminale</strong>.<br />
+          Spécialité technique — Cameroun.
+        </p>
+        <span class="tl-badge">
+          Baccalauréat technique en MISE (Maintenance et installation des systèmes électroniques)</span>
+      </div>
+
+      <!-- L1 -->
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2021 – 2022</p>
+        <h3 class="tl-title">Licence 1 — Université de Ngaoundéré</h3>
+        <p class="tl-place">
+          Faculté des Sciences.<br />
+          Première année universitaire en sciences fondamentales.
+        </p>
+        <span class="tl-badge">L1 Sciences Informatique</span>
+      </div>
+
+      <!-- L2 -->
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2022 – 2023</p>
+        <h3 class="tl-title">Licence 2 — Université de Ngaoundéré</h3>
+        <p class="tl-place">
+          Faculté des Sciences.<br />
+          Approfondissement en physique, électronique et informatique.
+        </p>
+        <span class="tl-badge">L2 Sciences Informatique</span>
+      </div>
+
+      <!-- L3 -->
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2024 – 2025</p>
+        <h3 class="tl-title">Licence 3 — Université de Ngaoundéré</h3>
+        <p class="tl-place">
+          Faculté des Sciences.<br />
+          Consolidation des bases en systèmes et réseaux.
+        </p>
+        <span class="tl-badge">L3 Sciences informatique</span>
+      </div>
+
+      <!-- IUT – actuel -->
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <p class="tl-year">2025-2026 – Présent ✦ En cours</p>
+        <h3 class="tl-title">Licence Technologique — IUT de Ngaoundéré</h3>
+        <p class="tl-place">
+          Institut Universitaire de Technologies de Ngaoundéré.<br />
+          Spécialité : <strong>Réseaux et Télécommunications</strong>.<br />
+          Formation orientée terrain, pratique et professionnelle.
+        </p>
+        <span class="tl-badge">En cours · Réseaux & Télécom</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== COMPÉTENCES ===================== -->
+  <section id="skills">
+    <p class="section-label">02 / Savoir-faire</p>
+    <h2 class="section-title">Mes <span>Compétences</span></h2>
+
+    <div class="skills-grid">
+
+      <div class="skill-card" data-level="85">
+        <div class="skill-icon">📡</div>
+        <p class="skill-name">Antennes Canal+</p>
+        <p class="skill-desc">Installation et orientation d'antennes paraboliques Canal+, Startimes et systèmes DVB-S2.</p>
+        <div class="skill-bar"><div class="skill-fill"></div></div>
+      </div>
+
+      <div class="skill-card" data-level="80">
+        <div class="skill-icon">🔧</div>
+        <p class="skill-name">Maintenance Électronique</p>
+        <p class="skill-desc">Diagnostic et réparation de systèmes électroniques : cartes, décodeurs, équipements réseau.</p>
+        <div class="skill-bar"><div class="skill-fill"></div></div>
+      </div>
+
+      <div class="skill-card" data-level="78">
+        <div class="skill-icon">🌐</div>
+        <p class="skill-name">Réseaux & Télécom</p>
+        <p class="skill-desc">Administration de réseaux LAN/WAN, protocoles TCP/IP, câblage structuré et Wi-Fi.</p>
+        <div class="skill-bar"><div class="skill-fill"></div></div>
+      </div>
+
+      <div class="skill-card" data-level="90">
+        <div class="skill-icon">🎬</div>
+        <p class="skill-name">Montage Audiovisuel</p>
+        <p class="skill-desc">Montage vidéo professionnel, effets spéciaux, étalonnage couleur et post-production.</p>
+        <div class="skill-bar"><div class="skill-fill"></div></div>
+      </div>
+
+      <div class="skill-card" data-level="88">
+        <div class="skill-icon">🎵</div>
+        <p class="skill-name">Production Musicale</p>
+        <p class="skill-desc">Composition, arrangement et mixage musical. Univers sonore varié et créatif.</p>
+        <div class="skill-bar"><div class="skill-fill"></div></div>
+      </div>
+
+      <div class="skill-card" data-level="65">
+        <div class="skill-icon">⚙️</div>
+        <p class="skill-name">DevOps (en apprentissage)</p>
+        <p class="skill-desc">Initiation à Linux, Git, Docker, CI/CD et automatisation des infrastructures.</p>
+        <div class="skill-bar"><div class="skill-fill"></div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== RÊVE DevOps ===================== -->
+  <section id="dream">
+    <p class="section-label">03 / Vision</p>
+    <h2 class="section-title">Mon <span>Rêve</span> — DevOps</h2>
+
+    <div class="dream-box">
+      <div class="dream-text">
+        <p>
+          Mon ambition est de devenir un <strong>ingénieur DevOps</strong> accompli.
+          Cette discipline à la croisée du développement et des opérations me passionne
+          par sa capacité à <strong>automatiser</strong>, <strong>fiabiliser</strong>
+          et <strong>accélérer</strong> la livraison de solutions technologiques.
+        </p>
+        <p>
+          Grâce à ma formation en Réseaux & Télécommunications, je dispose d'une
+          base solide sur les infrastructures. Je souhaite la compléter avec des
+          compétences en <strong>containerisation</strong>, <strong>orchestration</strong>
+          et <strong>intégration continue</strong>.
+        </p>
+        <div class="tech-pills">
+          <span class="pill">Linux</span>
+          <span class="pill">Docker</span>
+          <span class="pill">Kubernetes</span>
+          <span class="pill">Git / GitHub</span>
+          <span class="pill">CI/CD</span>
+          <span class="pill">Terraform</span>
+          <span class="pill">Ansible</span>
+          <span class="pill">AWS / Cloud</span>
+          <span class="pill">Python</span>
+          <span class="pill">Bash</span>
+        </div>
+      </div>
+
+      <div class="dream-visual">
+        <div class="orbit"></div>
+        <div class="orbit"></div>
+        <div class="orbit-center">DevOps</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section id="contact">
+    <p class="section-label">04 / Me Joindre</p>
+    <h2 class="section-title">Prendre <span>Contact</span></h2>
+
+    <div class="contact-grid">
+
+      <!-- Téléphone -->
+      <a href="tel:+237693965903" class="contact-card">
+        <div class="c-icon">📱</div>
+        <div>
+          <p class="c-label">Téléphone</p>
+          <p class="c-value">+237 693 965 903</p>
+        </div>
+      </a>
+
+      <!-- Email -->
+      <a href="mailto:hugenedjk@gmail.com" class="contact-card">
+        <div class="c-icon">✉️</div>
+        <div>
+          <p class="c-label">Email</p>
+          <p class="c-value">hugenedjk@gmail.com</p>
+        </div>
+      </a>
+
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/in/lionel-djk-0622b93a1" target="_blank" rel="noopener" class="contact-card">
+        <div class="c-icon">💼</div>
+        <div>
+          <p class="c-label">LinkedIn</p>
+          <p class="c-value">Lionel DJK</p>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer>
+    Conçu &amp; développé par <span>Lionel DJOKI</span> · Mai 2026 · Réseaux &amp; Télécommunications
+  </footer>
+
+  <!-- ============================================================
+       JAVASCRIPT – toutes les interactions & animations
+       ============================================================ -->
+  <script>
+    /* ---- 1. Curseur personnalisé ---- */
+    const cur = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cur.style.left = e.clientX + 'px';
+      cur.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .skill-card, .contact-card').forEach(el => {
+      el.addEventListener('mouseenter', () => cur.classList.add('big'));
+      el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+    });
+
+    /* ---- 2. Texte en cours de frappe (Hero) ---- */
+    const phrases = [
+      'Futur Ingénieur Télécom…',
+      'Passionné de DevOps…',
+      'Créateur audiovisuel…',
+      'Installateur d\'antennes…',
+      'Musicien dans l\'âme…',
+    ];
+    let pi = 0, ci = 0, deleting = false;
+    const typedEl = document.getElementById('typed-text');
+    const blink   = document.getElementById('cursor-blink');
+
+    setInterval(() => { blink.style.opacity = blink.style.opacity === '0' ? '1' : '0'; }, 500);
+
+    function type() {
+      const phrase = phrases[pi];
+      if (!deleting) {
+        typedEl.textContent = phrase.slice(0, ++ci);
+        if (ci === phrase.length) { deleting = true; setTimeout(type, 1600); return; }
+      } else {
+        typedEl.textContent = phrase.slice(0, --ci);
+        if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+      }
+      setTimeout(type, deleting ? 50 : 80);
+    }
+    setTimeout(type, 1400);
+
+    /* ---- 3. Intersection Observer – animation au scroll ---- */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+
+          /* Animer les barres de compétence */
+          const fill = entry.target.querySelector('.skill-fill');
+          if (fill) {
+            const level = entry.target.dataset.level || 0;
+            setTimeout(() => { fill.style.width = level + '%'; }, 200);
+          }
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.tl-item, .skill-card').forEach(el => observer.observe(el));
+
+    /* ---- 4. Highlight lien nav actif au scroll ---- */
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+      });
+      navLinks.forEach(a => {
+        a.style.color = a.getAttribute('href') === '#' + current
+          ? 'var(--blue2)' : '';
+      });
+    });
+  </script>
+
+</body>
+</html>
